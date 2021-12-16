@@ -3,6 +3,7 @@ import 'react-native-gesture-handler';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
+import messaging from '@react-native-firebase/messaging';
 import SplashScreen from './src/screen/SplashScreen';
 import WelcomeScreen from './src/screen/WelcomeScreen';
 import PreRegisterScreen from './src/screen/PreRegisterScreen';
@@ -24,6 +25,8 @@ import OrderSuccess from "./src/screen/OrderSuccess";
 import OrderScreen from "./src/screen/OrderScreen";
 import OrderStatus from "./src/screen/OrderScreen/OrderStatus";
 import OrderDelivery from "./src/screen/OrderScreen/OrderDelivery";
+import { Alert } from 'react-native';
+import { requestUserPermission,notificationListener } from './src/utils/NotificationService';
 
 const MainStack = createStackNavigator();
 const RootStack = createStackNavigator();
@@ -96,18 +99,12 @@ class App extends Component {
 
         </RootStack.Navigator>
     );
-    // componentDidMount = async () => {
-    //     this.createNotificationListeners();
-    // };
+    componentDidMount = async () => {
+        requestUserPermission();
+        notificationListener();
+    };
 
-    // async createNotificationListeners() {
-    //     const unsubscribe = messaging().onMessage(async remoteMessage => {
-    //         Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-    //     });
-
-    //     return unsubscribe;
-    // }
-
+   
     render() {
         return <NavigationContainer>{this.RootStackScreen()}</NavigationContainer>;
     }

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "534236275432",
+    "project_id": "gofood-91f7a",
+    "storage_bucket": "gofood-91f7a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:534236275432:android:c2c78afd1c1882f0cbdf5d",
+        "android_client_info": {
+          "package_name": "com.frontendsource.gofood"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "534236275432-091232jcq2jpt4s3g65kja6b9vb8d5p5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.frontendsource.gofood",
+            "certificate_hash": "f03b124cac2f68003a6a1412af29fe207bc54be0"
+          }
+        },
+        {
+          "client_id": "534236275432-gtqk9uasadb4n32t5f6d2rbksosrhovu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBj24szXrwBKmAXNetLDmX5cKwQU8bEhfA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "534236275432-gtqk9uasadb4n32t5f6d2rbksosrhovu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
