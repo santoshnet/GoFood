@@ -110,6 +110,20 @@ export const getNewProduct = async (token) => {
   });
 };
 
+export const getProductByCategory = async (token,category_id) => {
+  const body = {
+    token: token,
+    category_id:category_id
+    };
+  return await API({
+    method: 'POST',
+    url: 'api/v1/products',
+    data: body,
+  }).then(res => {
+    return res;
+  });
+};
+
 export const getAllBanners = async () => {
   return await API({
     method: 'GET',

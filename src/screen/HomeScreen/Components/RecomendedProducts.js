@@ -1,23 +1,25 @@
 import React, {Component} from 'react';
-import {FlatList, Image, StyleSheet, Text, View} from "react-native";
+import {FlatList, Image, StyleSheet, Text, View,TouchableOpacity} from "react-native";
 import {Color, Dimension, Fonts} from "../../../theme";
 import RelativeLayout from "../../../components/RelativeLayout";
 import StarRating from "react-native-star-rating";
 import Row from "../../../components/Rows";
 import Icon from "react-native-vector-icons/Feather";
 import { BASE_URL } from './../../../axios/API';
+import { useNavigation } from '@react-navigation/native';
 
 const Width = Dimension.window.width /2
 
-class RecomendedProducts extends Component {
-    constructor(props) {
-        super(props);
-
+function RecomendedProducts (props) {
+   
+    const navigation = useNavigation();
+    const navigateToProductView=(item)=>{
+        navigation.navigate("ProductView",{item:item});
     }
-
-    renderItem = ({item}) => {
+    const renderItem = ({item}) => {
 
         return (
+            <TouchableOpacity  onPress={()=>navigateToProductView(item)}>
             <RelativeLayout style={styles.itemContainer}>
                 <Image source={{ uri: BASE_URL+item.image}} style={styles.itemImage}/>
                 <Text style={styles.title}>{item.name}</Text>
@@ -34,24 +36,24 @@ class RecomendedProducts extends Component {
                     />
                 </Row>
             </RelativeLayout>
+            </TouchableOpacity>
         )
     }
 
 
-    render() {
         return (
             <View>
                 <FlatList
-                    data={this.props.data}
+                    data={props.data}
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    keyExtractor={item => `${item.id}`}
-                    renderItem={this.renderItem}
+                    keyExtractor={(item,key) => item.id+key+item.category_id}
+                    renderItem={renderItem}
                     contentContainerStyle={{paddingVertical: 20}}
                 />
             </View>
         );
-    }
+    
 }
 
 

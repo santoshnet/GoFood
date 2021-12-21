@@ -53,7 +53,7 @@ const Category =({categories})=> {
                 data={categories}
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                keyExtractor={item => `${item.id}`}
+                keyExtractor={item => item.id}
                 renderItem={renderItem}
                 contentContainerStyle={{paddingVertical: 20}}
             />

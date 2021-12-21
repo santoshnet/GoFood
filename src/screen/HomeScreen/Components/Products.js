@@ -60,7 +60,7 @@ const Products =(props)=>{
                     data={props.data}
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    keyExtractor={item => `${item.id}`}
+                    keyExtractor={item => item.category_id+item.id}
                     renderItem={renderItem}
                     contentContainerStyle={{paddingVertical: 20}}
                 />

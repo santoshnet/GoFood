@@ -10,7 +10,9 @@ import FeatherIcon from "react-native-vector-icons/Feather";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import Row from "../../components/Rows";
 import Card from "../../components/Card";
-import MenuItem from "./Component/MenuItem";
+import MenuItem from "../Products/Component/MenuItem";
+import { BASE_URL } from './../../axios/API';
+import TextViewMedium from './../../components/CustomText/TextViewMedium';
 
 class Index extends Component {
 
@@ -56,7 +58,7 @@ class Index extends Component {
                     translucent
                 />
                 <RelativeLayout style={{marginTop: -25}}>
-                    <Image source={this.state.productData.photo} style={{width: Dimension.window.width, height: 270}}/>
+                    <Image source={{ uri: BASE_URL+this.state.productData.image}}  style={{width: Dimension.window.width, height: 270}}/>
                     <AbsoluteLayout style={{
                         padding: 20,
                         marginTop: 10,
@@ -64,7 +66,7 @@ class Index extends Component {
                         justifyContent: 'space-between',
                         flexDirection: 'row'
                     }}>
-                        <TouchableOpacity onPress={()=>this.props.navigation.goBack()}>
+                        <TouchableOpacity onPress={()=>this.props.navigation.replace("HomeScreen")}>
                             <Icon name={"angle-left"} size={30} color={Color.black}/>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={()=>  this.props.navigation.replace('Home')}>
@@ -79,7 +81,7 @@ class Index extends Component {
                 }}>
                     <Column style={{padding:20}}>
                         <Text style={styles.title}>{this.state.productData.name}</Text>
-                        <Text style={styles.subTitle}>Burger, Desi Food, Breakfast</Text>
+                        <Text style={styles.subTitle}>{this.state.productData.category}</Text>
                         <Row style={{marginTop: 10}}>
                             <Row style={styles.optionContainer}>
                                 <Icon name={'star'} color={Color.yellow} size={24}/>
@@ -87,10 +89,11 @@ class Index extends Component {
                             </Row>
                             <Row style={[styles.optionContainer, {backgroundColor: '#e2e7ff'}]}>
                                 <Icon name={'clock-o'} color={Color.blue} size={24}/>
-                                <Text style={styles.optionText}>{this.state.productData.duration}</Text>
+                                <Text style={styles.optionText}>{this.state.productData.prepareTime}</Text>
                             </Row>
 
                         </Row>
+                        <TextViewMedium style={{ marginTop:20 }}>{this.state.productData.description}</TextViewMedium>
 
                     </Column>
 
