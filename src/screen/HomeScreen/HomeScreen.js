@@ -20,9 +20,13 @@ import Products from "./Components/Products";
 import AppBarRight from "./Components/AppBarRight";
 import Offer from "./Components/Offer";
 import RecomendedProducts from "./Components/RecomendedProducts";
+import { getUserDetails } from '../../utils/LocalStorage';
+import { getAllBanners,getCategories,getHomePage,getNewProduct,searchProduct } from '../../axios/ServerRequest';
+import ProgressLoader from 'rn-progress-loader';
+import  Toast  from 'react-native-simple-toast';
+import TextViewMedium from './../../components/CustomText/TextViewMedium';
 
 const {width: screenWidth} = Dimensions.get('window')
-
 
 const ENTRIES1 = [
     {
@@ -41,14 +45,125 @@ class HomeScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            categories: categoryData,
             selectedCategory: '',
-            activeSlide: 0
+            activeSlide: 0,
+            visible: false,
+            user:null,
+            banners:[],
+            categories:[],
+            homePageProduct:[],
+            newProduct:[],
+            searchData:[],
+            searchText:''
         }
     }
 
+    async componentDidMount(){
+        const user = await getUserDetails();
+        this.setState({user:user});
+        this.fetchBanners();
+        this.fetchCategories();
+        this.fetchHomeProduct();
+        this.fetchNewProduct();
+    }
+    fetchBanners=()=>{
+        this.setState({visible:true});
+        getAllBanners()
+        .then(response => {
+          let data = response.data;
+          if (data.status === 200) {
+              this.setState({banners:data.banners})
+          } else {
+            Toast.show(data.message, Toast.LONG);
+          }
+          this.setState({visible: false});
+        })
+        .catch(error => {
+          console.log(error);
+          this.setState({visible: false});
+        });
+    }
+   
+    fetchCategories=()=>{
+        this.setState({visible:true});
+        getCategories(this.state.user.token)
+        .then(response => {
+          let data = response.data;
+          if (data.status === 200) {
+              this.setState({categories:data.categories})
+          } else {
+            Toast.show(data.message, Toast.LONG);
+          }
+          this.setState({visible: false});
+        })
+        .catch(error => {
+          console.log(error);
+          this.setState({visible: false});
+        });
+        
+    }
+   
+    fetchHomeProduct=()=>{
+        this.setState({visible:true});
+        getHomePage(this.state.user.token)
+        .then(response => {
+          let data = response.data;
+          if (data.status === 200) {
+              this.setState({homePageProduct:data.products})
+          } else {
+            Toast.show(data.message, Toast.LONG);
+          }
+          this.setState({visible: false});
+        })
+        .catch(error => {
+          console.log(error);
+          this.setState({visible: false});
+        });
+        
+    }
+   
+    fetchNewProduct=()=>{
+        this.setState({visible:true});
+        getNewProduct(this.state.user.token)
+        .then(response => {
+          let data = response.data;
+          console.log(data);
+          if (data.status === 200) {
+
+              this.setState({newProduct:data.products})
+          } else {
+            Toast.show(data.message, Toast.LONG);
+          }
+          this.setState({visible: false});
+        })
+        .catch(error => {
+          console.log(error);
+          this.setState({visible: false});
+        });
+        
+    }
+
+    onchangeSearchText(text) {
+        this.setState({searchText:text});
+        if(text.length>0){
+            searchProduct(text)
+            .then(response => {
+                console.log(response.data.products);
+              this.setState({searchData: response.data.products});
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        }else{
+
+        }
+        
+      }
+    
+   
 
     render() {
+        const {user} = this.state;
         return (
             <View style={styles.container}>
                 <AppStatusBar
@@ -61,11 +176,11 @@ class HomeScreen extends Component {
                 <Column style={styles.header}>
                     <Row style={{justifyContent: 'space-between'}}>
                         <Column>
-                            <Text style={styles.title}>Hi, Santosh</Text>
+                            <Text style={styles.title}>Hi, {user?user.name:null}</Text>
                             <TouchableOpacity style={{paddingTop: 5}}>
                                 <Row style={{alignItems: 'center'}}>
                                     <Icon name={"map-pin"} color={Color.white} size={16}/>
-                                    <Text style={styles.location}>Bangalore</Text>
+                                    <Text style={styles.location}>{user?user.address:null}</Text>
                                 </Row>
 
                             </TouchableOpacity>
@@ -75,19 +190,26 @@ class HomeScreen extends Component {
                     </Row>
                 </Column>
                 <RelativeLayout style={styles.searchContainer}>
-                    <UserInput containerStyle={styles.searchText} placeholder={"Search here...."}/>
+                    <UserInput containerStyle={styles.searchText}
+                     placeholder={"Search here...."}   
+                     onChangeText={text => this.onchangeSearchText(text)}
+                     value={this.state.searchText}
+                    />
                     <AbsoluteLayout style={{top: 10, left: 10}}>
                         <Icon name={"search"} color={Color.grayColor} size={24}/>
                     </AbsoluteLayout>
                     <AbsoluteLayout style={{top: 10, right: 10}}>
                         <Icon name={"sliders"} color={Color.grayColor} size={24}/>
                     </AbsoluteLayout>
+                    <AbsoluteLayout  style={{ padding:10, background:Color.white }}>
 
+                    </AbsoluteLayout>
                 </RelativeLayout>
                 <ScrollView>
                     <Column>
                         <View style={{marginTop: -10, marginBottom: 10}}>
-                            <BannerSlider data={ENTRIES1}/>
+                            {this.state.banners?
+                            <BannerSlider data={this.state.banners}/>:null}
                         </View>
                         <Row style={{justifyContent:'space-between', alignItems:'center'}}>
                             <Text style={[styles.title,{color: Color.black, margin:10}]}>Explore Category</Text>
@@ -97,10 +219,10 @@ class HomeScreen extends Component {
 
                         </Row>
                         <View style={{height: 160}}>
-                            <Category categories={this.state.categories}/>
+                            {this.state.categories?<Category categories={this.state.categories}/>:null}
                         </View>
                         <View>
-                            <Products data={restaurantData}/>
+                            <Products data={this.state.homePageProduct}/>
                         </View>
                         <View>
                             <Offer data={offerData}/>
@@ -112,12 +234,16 @@ class HomeScreen extends Component {
                             </TouchableOpacity>
                         </Row>
                         <View>
-                            <RecomendedProducts data={restaurantData}/>
+                            {this.state.newProduct?<RecomendedProducts data={this.state.newProduct}/>:null}
                         </View>
 
                     </Column>
                 </ScrollView>
-
+                <ProgressLoader
+                visible={this.state.visible}
+                isModal={true} isHUD={true}
+                hudColor={"#000000"}
+                color={"#FFFFFF"} />
 
             </View>
         );
@@ -138,7 +264,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontFamily: Fonts.primaryBold,
-        fontSize: 20,
+        fontSize: 18,
         color: Color.white
     },
     location: {

@@ -13,7 +13,7 @@ export default {
   headerheight: 50,
   title: 20,
   textInputHeight: 40,
-
+  defaultTextSize:14,
   // global sizes
   base: 8,
   font: 14,

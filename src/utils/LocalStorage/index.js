@@ -5,6 +5,7 @@ const USER_DETAILS = 'user_details';
 const CART = 'cart';
 const PRODUCTITEM = 'product_item';
 const WISHLIST = 'wishlist';
+const FIREBASE_TOKEN = 'firebase_token';
 
 export const getApiKey = async () => {
     try {
@@ -18,6 +19,20 @@ export const getApiKey = async () => {
 
 export const setApiKey = api => {
     AsyncStorage.setItem(API_KEY, api);
+};
+
+export const getFirebaseToken = async () => {
+    try {
+        let firebaseToken = await AsyncStorage.getItem(FIREBASE_TOKEN);
+        return firebaseToken;
+    } catch (error) {
+        console.log('Error fetching', error);
+        return null;
+    }
+};
+
+export const setFirebaseToken = token => {
+    AsyncStorage.setItem(FIREBASE_TOKEN, token);
 };
 
 export const getToken = async () => {

@@ -3,6 +3,7 @@ import {FlatList, Image, Text, TouchableOpacity, View, StyleSheet} from "react-n
 import {Color, Fonts} from "../../../theme";
 import {categoryData} from "../../../data/restaurantData";
 import { useNavigation } from '@react-navigation/native';
+import { BASE_URL } from '../../../axios/API';
 
 const Category =({categories})=> {
 
@@ -29,7 +30,7 @@ const Category =({categories})=> {
                     backgroundColor: (selectedCategory?.id === item.id ? Color.white : Color.graylight),
                 }]}>
                     <Image
-                        source={item.icon}
+                        source={{ uri: BASE_URL+item.cateimg}}
                         resizeMode="contain"
                         style={{
                             height: 30,
@@ -40,7 +41,7 @@ const Category =({categories})=> {
                 </View>
                 <Text style={[styles.categoryText,{
                     color: (selectedCategory?.id === item.id ? Color.white : Color.black),
-                }]}>{item.name}</Text>
+                }]}>{item.category}</Text>
 
             </TouchableOpacity>
         )

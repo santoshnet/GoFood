@@ -21,6 +21,7 @@ class Products extends Component {
 
     componentDidMount() {
         let category = this.props.route.params.item;
+        console.log(category);
         let productData = restaurantData.filter(a => a.categories.includes(category.id))
         this.setState({productData: productData})
     }
@@ -79,7 +80,7 @@ class Products extends Component {
                     barStyle="light-content"
                 />
                 <ToolBar icon={"chevron-left"} title={this.props.route.params.item.name}
-                         onPress={() => this.props.navigation.goBack()}/>
+                         onPress={() => this.props.navigation.replace("HomeScreen")}/>
 
                 <FlatList
                     data={this.state.productData}

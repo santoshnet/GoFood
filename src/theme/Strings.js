@@ -101,7 +101,9 @@ export default {
   enterValidPassword: "Enter Valid Password",
   newUser: "New user ? create a new account",
   enterName: "Enter Name",
+  enterEmail: "Enter Email",
   enterValidName: "Enter valid name",
+  enterValidEmail: "Enter valid Email",
     enter_your_details: "Enter your Details",
   enter_your_persoal_details: "Enter your Personal details to continue our service"
 

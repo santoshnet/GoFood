@@ -1,12 +1,12 @@
 import React from 'react';
 import {Text, StyleSheet} from 'react-native';
-import {Colors, Dimensions, Fonts} from '../../theme';
+import {Color, Dimension, Fonts} from '../../theme';
 
 
 const TextViewRegular=(props)=>{
     return(
         <Text style={[styles.text,props.style]}>
-            {props.text}
+            {props.children}
         </Text>
     );
 
@@ -15,9 +15,9 @@ const TextViewRegular=(props)=>{
 const styles = StyleSheet.create({
     text:{
         display:'flex',
-        fontSize:Dimensions.defaultTextSize,
+        fontSize:Dimension.defaultTextSize,
         fontFamily: Fonts.primaryRegular,
-        color:Colors.black
+        color:Color.black
 
     }
 });

@@ -2,13 +2,15 @@ import React, {Component} from 'react';
 import Carousel from "react-native-snap-carousel";
 import {Color, Dimension, Fonts} from "../../../theme";
 import {Image, View,StyleSheet} from "react-native";
-
+import { BASE_URL } from './../../../axios/API';
 class BannerSlider extends Component {
     _renderItem({item, index}, parallaxProps) {
         return (
             <View style={styles.item}>
                 <Image
-                    source={item.illustration}
+                     source={{
+                        uri: BASE_URL+item.image,
+                      }}
                     style={{width: '100%', height: 150, marginTop: 30, borderRadius: 15, resizeMode: 'cover'}}/>
             </View>
         );

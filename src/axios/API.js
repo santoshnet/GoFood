@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {getApiKey} from '../utils/LocalStorage';
-const URL = 'https://quintuslabs.in/';
+const URL = 'https://foodizone.000webhostapp.com/';
 
 export const BASE_URL = URL;
 

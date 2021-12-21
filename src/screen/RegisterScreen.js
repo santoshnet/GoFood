@@ -6,38 +6,84 @@ import UserInput from "../components/UserInput";
 import Button from "../components/Button";
 import Toast from 'react-native-simple-toast';
 import User from '../assets/icons/user.png'
-import Mobile from '../assets/icons/mobile.png'
+import Mobile from '../assets/icons/email.png'
 import Lock from '../assets/icons/padlock.png'
 import RelativeLayout from "../components/RelativeLayout";
 import AppStatusBar from './../components/AppStatusBar';
-
+import { checkInternetConnection,userRegister } from './../axios/ServerRequest';
+import Validator from '../utils/Validator/Validator';
+import {
+    DEFAULT_RULE,
+    NAME_RULE,
+    EMAIL_RULE,
+    PASSWORD_RULE,
+  } from '../utils/Validator/rule';
+import { getFirebaseToken, setApiKey, setUserDetails } from '../utils/LocalStorage';
 class RegisterScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
             name: '',
-            phone: '',
-            password: ''
+            email: '',
+            password: '',
+            loading:false
         };
     }
 
+    componentDidMount = () => {
+        checkInternetConnection();
+      };
+    
 
     hideModal = () => {
         this.setState({isModalVisible: false})
     }
-    handleSubmit = () => {
-        if (this.state.name.length === 0 || this.state.name.length < 3) {
-            Toast.showWithGravity(Strings.enterValidName, Toast.LONG, Toast.BOTTOM);
-        }
-        if (this.state.phone.length === 0 || this.state.phone.length < 10) {
-            Toast.showWithGravity(Strings.enterValidPhone, Toast.LONG, Toast.BOTTOM);
+    handleSubmit = async() => {
+        const {
+            name,
+            email,
+            password,
+            loading
+          } = this.state;
 
-        } else if (this.state.password.length === 0 || this.state.password.length < 6) {
-            Toast.showWithGravity(Strings.enterValidPassword, Toast.LONG, Toast.BOTTOM);
-        } else {
-            this.props.navigation.replace("OTPScreen", {"phone": this.state.phone})
-        }
-
+    const firebase_token =   await getFirebaseToken(); 
+    if (!Validator(name, DEFAULT_RULE)) {
+        Toast.show(Strings.enterValidName, Toast.LONG);
+        return;
+      } else if (!Validator(name, NAME_RULE)) {
+        Toast.show(Strings.enterValidName, Toast.LONG);
+        return;
+      }else if (!Validator(email, DEFAULT_RULE)) {
+        Toast.show(Strings.enterValidEmail, Toast.LONG);
+        return;
+      } else if (!Validator(email, EMAIL_RULE)) {
+        Toast.show(Strings.enterValidEmail, Toast.LONG);
+        return;
+      } else if (!Validator(password, DEFAULT_RULE)) {
+        Toast.show(Strings.enterValidPassword, Toast.LONG);
+        return;
+      } else if (!Validator(password, PASSWORD_RULE)) {
+        Toast.show(Strings.enterValidPassword, Toast.LONG);
+        return;
+      }
+      this.setState({loading: true});
+      userRegister(name, email, password,firebase_token)
+        .then(response => {
+          let data = response.data;
+          if (data.status === 201) {
+            Toast.show(data.message, Toast.LONG);
+            setUserDetails(response.data.data);
+            setApiKey(data.data.token);
+            this.props.navigation.replace('OTPScreen',{email:email});
+          } else {
+            Toast.show(data.message,Toast.LONG);
+          }
+          this.setState({loading: false});
+        })
+        .catch(error => {
+          console.log(error);
+          this.setState({loading: false});
+        });
     }
 
     render() {
@@ -66,12 +112,11 @@ class RegisterScreen extends Component {
                         </RelativeLayout>
                         <RelativeLayout>
                             <UserInput
-                                placeholder={Strings.enterPhoneNumber}
-                                maxLength={10}
-                                keyboardType={"number-pad"}
-                                value={this.state.phone}
+                                placeholder={Strings.enterEmail}
+                                maxLength={100}
+                                value={this.state.email}
                                 containerStyle={{paddingLeft: 35}}
-                                onChangeText={(phone) => this.setState({phone})}/>
+                                onChangeText={(email) => this.setState({email})}/>
                             <Image source={Mobile} style={styles.inputIcon}/>
 
                         </RelativeLayout>
@@ -90,6 +135,7 @@ class RegisterScreen extends Component {
                             title={Strings.signup_text}
                             style={{marginTop: 25}}
                             onPress={this.handleSubmit}
+                            loading={this.state.loading}
                         />
                     </View>
                 </ScrollView>

@@ -7,16 +7,27 @@ import Button from "../components/Button";
 import Toast from 'react-native-simple-toast';
 import {TouchableOpacity} from "react-native-gesture-handler";
 import RelativeLayout from "../components/RelativeLayout";
-import Mobile from '../assets/icons/mobile.png'
+import Mobile from '../assets/icons/email.png'
 import Lock from '../assets/icons/padlock.png'
 import AppStatusBar from './../components/AppStatusBar';
+import Validator from '../utils/Validator/Validator';
+import {
+    DEFAULT_RULE,
+    NAME_RULE,
+    EMAIL_RULE,
+    PASSWORD_RULE,
+  } from '../utils/Validator/rule';
+import { getFirebaseToken, setApiKey, setUserDetails } from '../utils/LocalStorage';
+import { userLogin } from '../axios/ServerRequest';
+
 
 class LoginScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            phone: '',
-            password: ''
+            email: '',
+            password: '',
+            loading:false
         };
     }
 
@@ -24,15 +35,48 @@ class LoginScreen extends Component {
     hideModal = () => {
         this.setState({isModalVisible: false})
     }
-    handleSubmit = () => {
-        if (this.state.phone.length === 0 || this.state.phone.length < 10) {
-            Toast.showWithGravity(Strings.enterValidPhone, Toast.LONG, Toast.BOTTOM);
+    handleSubmit = async() => {
+        const {
+            email,
+            password,
+          } = this.state;
 
-        } else if (this.state.password.length === 0 || this.state.password.length < 6) {
-            Toast.showWithGravity(Strings.enterValidPassword, Toast.LONG, Toast.BOTTOM);
-        } else {
-            this.props.navigation.navigate("HomeScreen")
-        }
+       const firebase_token =   await getFirebaseToken(); 
+        if (!Validator(email, DEFAULT_RULE)) {
+            Toast.show(Strings.enterValidEmail, Toast.LONG);
+            return;
+          } else if (!Validator(email, EMAIL_RULE)) {
+            Toast.show(Strings.enterValidEmail, Toast.LONG);
+            return;
+          } else if (!Validator(password, DEFAULT_RULE)) {
+            Toast.show(Strings.enterValidPassword, Toast.LONG);
+            return;
+          } else if (!Validator(password, PASSWORD_RULE)) {
+            Toast.show(Strings.enterValidPassword, Toast.LONG);
+            return;
+          }
+          this.setState({loading: true});
+         userLogin(email, password,firebase_token)
+        .then(response => {
+          let data = response.data;
+          if (data.status === 200) {
+            Toast.show(data.message, Toast.LONG);
+            setUserDetails(response.data.data);
+            setApiKey(data.data.token);
+            if(data.data.verified==0){
+                this.props.navigation.replace('OTPScreen');
+            }else{
+                this.props.navigation.replace('HomeScreen');
+            }
+          } else {
+            Toast.show(data.message,Toast.LONG);
+          }
+          this.setState({loading: false});
+        })
+        .catch(error => {
+          console.log(error);
+          this.setState({loading: false});
+        });
 
     }
 
@@ -52,12 +96,11 @@ class LoginScreen extends Component {
                         <View style={styles.space}/>
                         <RelativeLayout>
                             <UserInput
-                                placeholder={Strings.enterPhoneNumber}
-                                maxLength={10}
-                                keyboardType={"number-pad"}
-                                value={this.state.phone}
+                                placeholder={Strings.enterEmail}
+                                maxLength={100}
+                                value={this.state.email}
                                 containerStyle={{paddingLeft: 35}}
-                                onChangeText={(phone) => this.setState({phone})}/>
+                                onChangeText={(email) => this.setState({email})}/>
                             <Image source={Mobile} style={styles.inputIcon}/>
 
                         </RelativeLayout>
@@ -77,6 +120,7 @@ class LoginScreen extends Component {
                             title={Strings.login_text}
                             style={{marginTop: 25}}
                             onPress={this.handleSubmit}
+                            loading={this.state.loading}
                         />
                         <TouchableOpacity style={{padding: 20, marginTop: 20}}
                                           onPress={() => this.props.navigation.navigate("RegisterScreen")}>
@@ -99,7 +143,6 @@ const styles = StyleSheet.create({
         height: 150,
         width: 150,
         alignSelf: 'center',
-        margin: 30,
         resizeMode: 'contain'
     },
     title: {

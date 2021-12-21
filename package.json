@@ -46,6 +46,7 @@
     "react-native-star-rating": "^1.1.0",
     "react-native-vector-icons": "^7.1.0",
     "react-navigation": "^4.4.1",
+    "rn-progress-loader": "^1.0.8",
     "save": "^2.4.0",
     "shortid": "^2.2.16"
   },

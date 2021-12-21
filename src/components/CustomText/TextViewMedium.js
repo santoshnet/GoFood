@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, StyleSheet} from 'react-native';
-import {Colors, Dimensions, Fonts} from '../../theme';
+import {Color,Fonts,Dimension} from '../../theme';
 
 
 const TextViewMedium=(props)=>{
@@ -15,9 +15,9 @@ const TextViewMedium=(props)=>{
 const styles = StyleSheet.create({
     text:{
         display:'flex',
-        fontSize:Dimensions.defaultTextSize,
+        fontSize:Dimension.defaultTextSize,
         fontFamily: Fonts.primarySemiBold,
-        color:Colors.black
+        color:Color.black
 
     }
 });

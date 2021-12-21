@@ -7,6 +7,7 @@ import Row from "../../../components/Rows";
 import Icon from "react-native-vector-icons/Feather";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import { useNavigation } from '@react-navigation/native';
+import { BASE_URL } from '../../../axios/API';
 
 const Width = Dimension.window.width - 100
 
@@ -22,9 +23,9 @@ const Products =(props)=>{
         return (
             <TouchableOpacity  onPress={()=>navigateToProductView(item)}>
             <RelativeLayout style={styles.itemContainer}>
-                <Image source={item.photo} style={styles.itemImage}/>
+                <Image  source={{ uri: BASE_URL+item.image}} style={styles.itemImage}/>
                 <Text style={styles.title}>{item.name}</Text>
-                <Text style={styles.categoryName}>Burgers, Fast Food, Snacks </Text>
+                <Text style={styles.categoryName}>{item.category} </Text>
                 <Row style={{justifyContent: 'space-between', marginTop: 10}}>
                     <StarRating
                         disabled={true}
@@ -38,11 +39,11 @@ const Products =(props)=>{
                     <Row style={{alignItems:'center'}}>
                         <Row style={{backgroundColor: '#F2EFEE', borderRadius:30,padding:3,marginRight:10,marginLeft:20,alignItems:'center'}}>
                              <Icon name={"map-pin"} color={Color.colorPrimary} size={12}/>
-                             <Text style={styles.locationText}>230 m</Text>
+                             <Text style={styles.locationText}>{}</Text>
                         </Row>
                        <Row style={{backgroundColor: '#F2EFEE', borderRadius:30,padding:3, marginRight: 10,alignItems:'center'}}>
                              <Icon name={"clock"} color={Color.colorPrimary} size={12}/>
-                             <Text style={styles.locationText}>{item.duration}</Text>
+                             <Text style={styles.locationText}>{item.prepareTime}</Text>
                         </Row>
 
                     </Row>
@@ -89,13 +90,14 @@ const styles = StyleSheet.create({
     },
     title: {
         fontFamily: Fonts.primarySemiBold,
-        fontSize: 16,
+        fontSize: 14,
         color: '#474747',
         marginTop: 10,
+        height:38
     },
     categoryName: {
         fontFamily: Fonts.primaryRegular,
-        fontSize: 10,
+        fontSize: 12,
         color: '#A5A5A5',
     },
     locationText:{

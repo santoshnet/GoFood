@@ -6,8 +6,8 @@ const ErrorHandler = (error) => {
             if(data.non_field_errors!== undefined && data.non_field_errors!==null){
                 message = data.non_field_errors;
             }
-            else if(data.phone!== undefined && data.phone!==null){
-                message = data.phone;
+            else if(data.email!== undefined && data.email!==null){
+                message = data.email;
             }
             
             else if(data.password!== undefined && data.password!==null){

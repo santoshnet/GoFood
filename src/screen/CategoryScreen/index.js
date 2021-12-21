@@ -6,6 +6,12 @@ import ToolBar from "../../components/ToolBar";
 import {categoryData} from '../../data/restaurantData';
 import {FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Card from "../../components/Card";
+import { getCategories } from '../../axios/ServerRequest';
+import ProgressLoader from 'rn-progress-loader';
+import { BASE_URL } from './../../axios/API';
+import { getUserDetails } from '../../utils/LocalStorage';
+
+
 
 const itemWidth = Dimension.window.width / 3
 const itemColors = ["#753cff", "#bb5454", "#4c59cd", "#684545", "#539757", "#218cc4",]
@@ -14,8 +20,29 @@ class CategoryScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            categories: categoryData,
+            categories: [],
+            visible:false
         }
+    }
+
+    async componentDidMount(){
+        const user = await getUserDetails();
+        this.setState({visible:true});
+        getCategories(user.token)
+        .then(response => {
+          let data = response.data;
+          if (data.status === 200) {
+              this.setState({categories:data.categories})
+          } else {
+            Toast.show(data.message, Toast.LONG);
+          }
+          this.setState({visible: false});
+        })
+        .catch(error => {
+          console.log(error);
+          this.setState({visible: false});
+        });
+        
     }
 
     renderItem = ({item}) => {
@@ -25,9 +52,9 @@ class CategoryScreen extends Component {
                     <TouchableOpacity onPress={() => this.props.navigation.navigate("Products",{item:item})}>
                         <Column style={{alignItems: 'center', justifyContent: 'center',}}>
                             <View style={styles.imageContainer}>
-                                <Image source={item.icon} style={{height: 40, width: 40}}/>
+                                <Image  source={{ uri: BASE_URL+item.cateimg}} style={{height: 40, width: 40}}/>
                             </View>
-                            <Text style={styles.itemTitle}>{item.name}</Text>
+                            <Text style={styles.itemTitle}>{item.category}</Text>
                         </Column>
                     </TouchableOpacity>
                 </Card>
@@ -57,6 +84,11 @@ class CategoryScreen extends Component {
                     extraData={this.state}
                     numColumns={3}
                 />
+                 <ProgressLoader
+                visible={this.state.visible}
+                isModal={true} isHUD={true}
+                hudColor={"#000000"}
+                color={"#FFFFFF"} />
             </Column>
         );
     }

@@ -5,6 +5,7 @@ import RelativeLayout from "../../../components/RelativeLayout";
 import StarRating from "react-native-star-rating";
 import Row from "../../../components/Rows";
 import Icon from "react-native-vector-icons/Feather";
+import { BASE_URL } from './../../../axios/API';
 
 const Width = Dimension.window.width /2
 
@@ -18,9 +19,9 @@ class RecomendedProducts extends Component {
 
         return (
             <RelativeLayout style={styles.itemContainer}>
-                <Image source={item.photo} style={styles.itemImage}/>
+                <Image source={{ uri: BASE_URL+item.image}} style={styles.itemImage}/>
                 <Text style={styles.title}>{item.name}</Text>
-                <Text style={styles.categoryName}>Burgers, Fast Food, Snacks </Text>
+                <Text style={styles.categoryName}>{item.category} </Text>
                 <Row style={{justifyContent: 'space-between', marginTop: 10}}>
                     <StarRating
                         disabled={true}
@@ -64,7 +65,7 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingLeft: 10,
         paddingRight: 10,
-        paddingBottom: 20
+        paddingBottom:10
     },
     itemImage: {
         height: 150,
@@ -74,9 +75,10 @@ const styles = StyleSheet.create({
     },
     title: {
         fontFamily: Fonts.primarySemiBold,
-        fontSize: 16,
+        fontSize: 14,
         color: '#474747',
         marginTop: 10,
+        height:35,
     },
     categoryName: {
         fontFamily: Fonts.primaryRegular,

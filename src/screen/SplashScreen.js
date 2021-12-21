@@ -20,19 +20,19 @@ class SplashScreen extends Component {
   async componentDidMount() {
     // Preload data from an external API
     // Preload data using AsyncStorage
-    // const data = await this.performTimeConsumingTask();
-    // const user = await getUserDetails();
-    // if (data !== null) {
-    //   if (user !== null) {
-    //     if (user.phone_verified) {
-    //       this.props.navigation.replace('HomeScreen');
-    //     } else {
-    //       this.props.navigation.replace('Login');
-    //     }
-    //   } else {
-    //     this.props.navigation.replace('WelcomeScreen');
-    //   }
-    // }
+     const data = await this.performTimeConsumingTask();
+    const user = await getUserDetails();
+    if (data !== null) {
+      if (user !== null) {
+        if (user.verified!=="0") {
+          this.props.navigation.replace('HomeScreen');
+        } else {
+          this.props.navigation.replace('LoginScreen');
+        }
+      } else {
+        this.props.navigation.replace('WelcomeScreen');
+      }
+    }
       setTimeout(() => {
         this.props.navigation.replace('WelcomeScreen');
       }, 3000);
