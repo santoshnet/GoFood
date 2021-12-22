@@ -6,8 +6,10 @@ import {Color, Fonts} from "../../theme";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import Card from "../../components/Card";
+import { BASE_URL } from '../../axios/API';
 
-const CartItem =({item})=> {
+const CartItem =(props)=> {
+        const {item} = props;
          const [counter,setCounter] = useState(0);
          useEffect(()=>{
              setCounter(item.quantity);
@@ -16,23 +18,21 @@ const CartItem =({item})=> {
         return (
             <Card>
                 <Row>
-                    <Image source={item.menu.photo} style={{height:100, width:100, borderRadius: 20, flex:0.25}}/>
+                    <Image source={{ uri: BASE_URL+item.image }} style={{height:100, width:100, borderRadius: 20, flex:0.25}}/>
                     <Column style={{flex:0.75, marginLeft: 10}}>
-                        <Text style={styles.title}>{item.menu.name}</Text>
+                        <Text style={styles.title}>{item.name}</Text>
                         <Row style={{justifyContent:'space-between', marginTop:25}}>
-                            <Text style={styles.optionText}>₹ {item.menu.price}</Text>
+                            <Text style={styles.optionText}>₹ {item.discount?item.discount:item.price}</Text>
 
                                 <Row style={{alignItems: 'center',height:35, backgroundColor: '#F6F6F6', borderRadius: 8, marginRight: 20}}>
                                     <TouchableOpacity style={{padding:6}} onPress={()=> {
-                                        if(counter>0){
-                                            setCounter(counter - 1)
-                                        }
+                                       props.updateToCart({id:item.id,quantity:parseInt(item.quantity)-1})
 
                                     }}>
                                         <FeatherIcon name={"minus"} size={14} color={Color.black} />
                                     </TouchableOpacity>
-                                    <Text style={[styles.optionText,{width:27,textAlign: 'center'}]}>{counter}</Text>
-                                    <TouchableOpacity style={{padding:6}} onPress={()=>setCounter(counter+1)}>
+                                    <Text style={[styles.optionText,{width:27,textAlign: 'center'}]}>{item.quantity}</Text>
+                                    <TouchableOpacity style={{padding:6}} onPress={()=> props.updateToCart({id:item.id,quantity:parseInt(item.quantity)+1})}>
                                         <FeatherIcon name={"plus"} size={14} color={Color.black} />
                                     </TouchableOpacity>
                             </Row>

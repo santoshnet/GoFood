@@ -7,60 +7,36 @@ import {
   TouchableOpacity,
   View,
   ScrollView,
-  Alert,
-  FlatList
+  RefreshControl
 } from 'react-native';
 import {Color, Fonts} from '../../theme';
 import AppStatusBar from '../../components/AppStatusBar';
 import Icon from 'react-native-vector-icons/Feather';
-import {
-  categoryData,
-  restaurantData,
-  offerData,
-} from '../../data/restaurantData';
-import Banner1 from '../../assets/images/banner1.png';
-import Banner2 from '../../assets/images/banner2.png';
-import Banner3 from '../../assets/images/banner3.png';
 import ToolBar from '../../components/ToolBar';
 import Row from '../../components/Rows';
-import RelativeLayout from '../../components/RelativeLayout';
-import AbsoluteLayout from '../../components/AbsoluteLayout';
 import Column from '../../components/Column';
 import UserImage from '../../assets/images/user.png';
-import UserInput from '../../components/UserInput';
 import Category from './Components/Category';
 import BannerSlider from './Components/BannerSlider';
 import Products from './Components/Products';
 import AppBarRight from './Components/AppBarRight';
 import Offer from './Components/Offer';
 import RecomendedProducts from './Components/RecomendedProducts';
-import {getUserDetails} from '../../utils/LocalStorage';
+import {getUserDetails,setCart,getCart} from '../../utils/LocalStorage';
 import {
   getAllBanners,
   getCategories,
   getHomePage,
   getNewProduct,
-  searchProduct,
+  getAllOffers,
+  getUserCart
 } from '../../axios/ServerRequest';
 import ProgressLoader from 'rn-progress-loader';
 import Toast from 'react-native-simple-toast';
-import TextViewMedium from './../../components/CustomText/TextViewMedium';
-import {BASE_URL} from './../../axios/API';
 import Searchbar from './Components/Searchbar';
 
 const {width: screenWidth} = Dimensions.get('window');
 
-const ENTRIES1 = [
-  {
-    illustration: Banner1,
-  },
-  {
-    illustration: Banner2,
-  },
-  {
-    illustration: Banner3,
-  },
-];
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -71,39 +47,51 @@ class HomeScreen extends Component {
       visible: false,
       user: null,
       banners: [],
+      offers: [],
       categories: [],
       homePageProduct: [],
       newProduct: [],
       searchData: [],
       searchText: '',
+      cartCount:0,
+      refresh:false
     };
   }
 
   async componentDidMount() {
+    this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      console.log('refresh');
+    });
     const user = await getUserDetails();
+    const cart = await getCart();
+    this.setState({cartCount:cart?cart.length:0})
     this.setState({user: user});
+    this.fetchData();
+  }
+
+  componentWillUnmount() {
+    this._unsubscribe();
+  }
+
+  onRefresh = () => {
+    this.setState({refresh:true});
+    this.fetchData();
+    setTimeout(() => {
+      this.setState({refresh:false});
+    }, 1000);
+  };
+
+
+  fetchData=()=>{
+    this.fetchOffers();
     this.fetchBanners();
     this.fetchCategories();
     this.fetchHomeProduct();
     this.fetchNewProduct();
+    this.fetchCartDetails();
   }
 
-  renderSearchItem = item => {
-    return;
-    <TouchableOpacity>
-      <Row>
-        <Image
-          source={{uri: BASE_URL + item.cateimg}}
-          resizeMode="contain"
-          style={{
-            height: 30,
-            width: 30,
-          }}
-        />
-        <TextViewMedium>{item.name}</TextViewMedium>
-      </Row>
-    </TouchableOpacity>;
-  };
+
 
   fetchBanners = () => {
     this.setState({visible: true});
@@ -112,6 +100,23 @@ class HomeScreen extends Component {
         let data = response.data;
         if (data.status === 200) {
           this.setState({banners: data.banners});
+        } else {
+          Toast.show(data.message, Toast.LONG);
+        }
+        this.setState({visible: false});
+      })
+      .catch(error => {
+        console.log(error);
+        this.setState({visible: false});
+      });
+  };
+  fetchOffers = () => {
+    this.setState({visible: true});
+    getAllOffers()
+      .then(response => {
+        let data = response.data;
+        if (data.status === 200) {
+          this.setState({offers: data.offers});
         } else {
           Toast.show(data.message, Toast.LONG);
         }
@@ -164,7 +169,6 @@ class HomeScreen extends Component {
     getNewProduct(this.state.user.token)
       .then(response => {
         let data = response.data;
-        console.log(data);
         if (data.status === 200) {
           this.setState({newProduct: data.products});
         } else {
@@ -175,6 +179,23 @@ class HomeScreen extends Component {
       .catch(error => {
         console.log(error);
         this.setState({visible: false});
+      });
+  };
+
+  fetchCartDetails = () => {
+    getUserCart(this.state.user.token)
+      .then(response => {
+        let data = response.data;
+        console.log(data);
+        if (data.status === 200) {
+          this.setState({ cartCount:data.cart.length});
+          setCart(data.cart);
+        } else {
+          Toast.show(data.message, Toast.LONG);
+        }
+      })
+      .catch(error => {
+        console.log(error);
       });
   };
 
@@ -191,7 +212,7 @@ class HomeScreen extends Component {
         <ToolBar
           icon={'menu'}
           onPress={() => this.props.navigation.openDrawer()}>
-          <AppBarRight />
+          <AppBarRight  count={this.state.cartCount}/>
         </ToolBar>
         <Column style={styles.header}>
           <Row style={{justifyContent: 'space-between'}}>
@@ -215,7 +236,13 @@ class HomeScreen extends Component {
          <Searchbar/>
             
          
-        <ScrollView>
+        <ScrollView 
+         refreshControl={
+          <RefreshControl
+            refreshing={this.state.refresh}
+            onRefresh={this.onRefresh}
+          />
+        }>
           <Column>
             <View style={{marginTop: -10, marginBottom: 10}}>
               {this.state.banners ? (
@@ -246,8 +273,8 @@ class HomeScreen extends Component {
             <View>
               <Products data={this.state.homePageProduct} />
             </View>
-            <View>
-              <Offer data={offerData} />
+            <View>{this.state.offers?<Offer data={this.state.offers} />:null}
+              
             </View>
             <Row
               style={{justifyContent: 'space-between', alignItems: 'center'}}>

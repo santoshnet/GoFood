@@ -10,11 +10,11 @@ import Row from "../../../components/Rows";
 import {useNavigation} from "@react-navigation/native";
 import { StackActions } from '@react-navigation/native';
 
-const AppBarRight =()=> {
+const AppBarRight =(props)=> {
 
     const navigation = useNavigation();
     const navigateToNotification=( )=>{
-        navigation.navigate("Notification");
+        navigation.push("Notification");
     }
     const navigateToCart=( )=>{
         navigation.navigate('CartScreen')
@@ -27,7 +27,7 @@ const AppBarRight =()=> {
                     <RelativeLayout style={{padding:10}}>
                         <Icon name={"shopping-bag"} size={24} color={Color.white}/>
                         <AbsoluteLayout style={{top:0,right:0}}>
-                            {/*<Text style={styles.counter}>0</Text>*/}
+                            <Text style={styles.counter}>{props.count}</Text>
                         </AbsoluteLayout>
                     </RelativeLayout>
                 </TouchableOpacity>

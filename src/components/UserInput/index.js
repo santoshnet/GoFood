@@ -33,6 +33,8 @@ function UserInput(props) {
         keyboardType={props.keyboardType}
         maxLength={props.maxLength}
         editable={props.editable}
+        multiline={props.multiline}
+        numberOfLines={props.numberOfLines }
         onBlur={onBlur}
         onFocus={onFocus}
         ref={inputElementRef}

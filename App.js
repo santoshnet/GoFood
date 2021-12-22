@@ -52,7 +52,7 @@ class App extends Component {
             <Drawer.Screen name="Products" component={Products}/>
             <Drawer.Screen name="ProductView" component={ProductView}/>
             <Drawer.Screen name="Notification" component={Notification}/>
-            <OrderStack.Screen name="CartScreen" component={CartScreen}/>
+            <Drawer.Screen name="CartScreen" component={CartScreen}/>
             <Drawer.Screen name="OrderScreen" component={OrderScreen}/>
             <Drawer.Screen name="OrderStatus" component={OrderStatus}/>
             <Drawer.Screen name="OrderDelivery" component={OrderDelivery}/>

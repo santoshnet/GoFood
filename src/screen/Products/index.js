@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {FlatList, Image, StyleSheet, Text} from 'react-native';
+import {FlatList, Image, StyleSheet, Text,TouchableOpacity} from 'react-native';
 import Column from '../../components/Column';
 import AppStatusBar from '../../components/AppStatusBar';
 import {Color, Fonts} from '../../theme';
@@ -7,15 +7,14 @@ import ToolBar from '../../components/ToolBar';
 import {restaurantData} from '../../data/restaurantData';
 import Row from '../../components/Rows';
 import Card from '../../components/Card';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import StarRating from 'react-native-star-rating';
 import ProgressLoader from 'rn-progress-loader';
 import Toast from 'react-native-simple-toast';
-import {getProductByCategory} from './../../axios/ServerRequest';
-import {getUserDetails} from '../../utils/LocalStorage';
+import {addCart,updateCart,getUserCart, getProductByCategory} from './../../axios/ServerRequest';
+import {getCart, getUserDetails,setCart} from '../../utils/LocalStorage';
 import { BASE_URL } from './../../axios/API';
 import MenuItem from './Component/MenuItem';
+import Badge from '../../components/Badge';
 
 class Products extends Component {
   constructor(props) {
@@ -24,20 +23,27 @@ class Products extends Component {
       productData: [],
       visible: false,
       category: null,
+      user:null,
+      cartCount:0,
+      cart:[]
     };
   }
 
+
+  
   async componentDidMount() {
+    this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      console.log('refresh');
+    });
     let category = this.props.route.params.item;
-    this.setState({category: category});
-    console.log(category);
-    this.setState({visible: true});
     const user = await getUserDetails();
+    const cart = await getCart();
+    this.setState({category: category,visible: true,user:user,cart:cart, cartCount:cart.length});
+
     getProductByCategory(user.token, category.id)
       .then(response => {
         let data = response.data;
         if (data.status === 200) {
-          console.log(data);
           this.setState({productData: data.products});
         } else {
           Toast.show(data.message, Toast.LONG);
@@ -50,9 +56,78 @@ class Products extends Component {
       });
   }
 
+  componentWillUnmount() {
+    this._unsubscribe();
+  }
+
+
+addToCart=(param)=>{
+  addCart(this.state.user.token,param.id,param.quantity)
+      .then(response => {
+        let data = response.data;
+        if (data.status === 200) {
+          this.getCartData();
+        } else {
+          Toast.show(data.message, Toast.LONG);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
+
+}
+updateToCart=(param)=>{
+  updateCart(this.state.user.token,param.id,param.quantity)
+  .then(response => {
+    let data = response.data;
+    if (data.status === 200) {
+      console.log(data.message);
+     
+    } else if(data.status === 204){
+      
+      this.setState({cartCount:this.state.cartCount-1});
+    }else {
+      Toast.show(data.message, Toast.LONG);
+    }
+    this.getCartData();
+  })
+  .catch(error => {
+    console.log(error);
+  });
+
+}
+
+getCartData=()=>{
+  getUserCart(this.state.user.token)
+      .then(response => {
+        let data = response.data;
+        if (data.status === 200) {
+          this.setState({cart:data.cart, cartCount:data.cart.length});
+          setCart(data.cart);
+        } else {
+          Toast.show(data.message, Toast.LONG);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+}
+
+getQuantity=(item)=>{
+  console.log(this.state.cart);
+   let data= this.state.cart.find(item1=>item1.product_id==item.id);
+   if(data){
+    return data.quantity;
+   }
+   return 0;
+
+}
+
   renderItem = ({item}) => {
+    let quantity = this.getQuantity(item);
     return (
-    <MenuItem item={item}/>
+    <MenuItem item={item} addToCart={this.addToCart} updateToCart={this.updateToCart} quantity={quantity}/>
     );
   };
 
@@ -66,13 +141,14 @@ class Products extends Component {
         <ToolBar
           icon={'chevron-left'}
           title={this.state.category ? this.state.category.category : null}
-          onPress={() => this.props.navigation.replace('HomeScreen')}
-        />
-
+          onPress={() => this.props.navigation.replace('HomeScreen')}>
+          <Badge count={this.state.cartCount}/>    
+        </ToolBar>
         <FlatList
           data={this.state.productData}
           renderItem={this.renderItem}
           keyExtractor={item => item.id}
+          extraData={this.state}
         />
         <ProgressLoader
           visible={this.state.visible}

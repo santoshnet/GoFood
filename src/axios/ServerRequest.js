@@ -132,6 +132,14 @@ export const getAllBanners = async () => {
     return res;
   });
 };
+export const getAllOffers = async () => {
+  return await API({
+    method: 'GET',
+    url: 'api/v1/offers',
+  }).then(res => {
+    return res;
+  });
+};
 
 
 export const searchProduct = async text => {
@@ -142,3 +150,79 @@ export const searchProduct = async text => {
     return res;
   });
 };
+
+export const getUserCart = async (token) => {
+  const body = {
+    token: token
+      };
+  return await API({
+    method: 'POST',
+    url: 'api/v1/userCart',
+    data: body,
+  }).then(res => {
+    return res;
+  });
+};
+
+export const getCartDetails = async (token) => {
+  const body = {
+    token: token
+      };
+  return await API({
+    method: 'POST',
+    url: 'api/v1/cartDetails',
+    data: body,
+  }).then(res => {
+    return res;
+  });
+};
+
+
+export const addCart = async (token,productId,quantity) => {
+  const body = {
+    "token":token,
+    "product_id":productId,
+    "quantity":quantity
+ };
+  return await API({
+    method: 'POST',
+    url: 'api/v1/addCart',
+    data: body,
+  }).then(res => {
+    return res;
+  });
+};
+
+export const updateCart = async (token,productId,quantity) => {
+  const body = {
+    "token":token,
+    "product_id":productId,
+    "quantity":quantity
+ };
+  return await API({
+    method: 'POST',
+    url: 'api/v1/updateCart',
+    data: body,
+  }).then(res => {
+    return res;
+  });
+};
+
+export const updateUserData = async (token,mobile,address,state,city,zip) => {
+  const body = {
+    "mobile": mobile,
+    "token":token,
+    "address":address,
+    "state":state,
+    "city":city,
+    "zip":zip
+ };
+  return await API({
+    method: 'POST',
+    url: 'api/v1/update_user',
+    data: body,
+  }).then(res => {
+    return res;
+  });
+};
+

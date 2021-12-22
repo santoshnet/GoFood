@@ -6,7 +6,7 @@ import {Color, Dimension, Fonts} from '../../theme';
 const TextViewBold=(props)=>{
     return(
         <Text style={[styles.text,props.style]}>
-            {props.text}
+            {props.children}
         </Text>
     );
 

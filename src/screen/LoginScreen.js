@@ -59,7 +59,7 @@ class LoginScreen extends Component {
          userLogin(email, password,firebase_token)
         .then(response => {
           let data = response.data;
-          if (data.status === 200) {
+          if (data.status === 200 && data.data) {
             Toast.show(data.message, Toast.LONG);
             setUserDetails(response.data.data);
             setApiKey(data.data.token);

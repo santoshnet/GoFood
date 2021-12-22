@@ -33,9 +33,7 @@ class SplashScreen extends Component {
         this.props.navigation.replace('WelcomeScreen');
       }
     }
-      setTimeout(() => {
-        this.props.navigation.replace('WelcomeScreen');
-      }, 3000);
+     
   }
 
   render() {
