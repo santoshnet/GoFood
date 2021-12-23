@@ -226,3 +226,31 @@ export const updateUserData = async (token,mobile,address,state,city,zip) => {
   });
 };
 
+export const placeOrder = async (token,orderItems) => {
+  const body = {
+    "token":token,
+    "orderItems":orderItems,
+  
+ };
+  return await API({
+    method: 'POST',
+    url: 'api/v1/placeOrder',
+    data: body,
+  }).then(res => {
+    return res;
+  });
+};
+
+export const orderDetails = async (token) => {
+  const body = {
+    "token":token  
+ };
+  return await API({
+    method: 'POST',
+    url: 'api/v1/orderDetails',
+    data: body,
+  }).then(res => {
+    return res;
+  });
+};
+

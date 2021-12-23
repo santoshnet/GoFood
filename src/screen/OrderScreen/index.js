@@ -7,27 +7,65 @@ import Card from "../../components/Card";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import {Text, StyleSheet, FlatList,} from "react-native";
 import Row from "../../components/Rows";
-import {cartData} from "../../data/restaurantData";
+import { getUserDetails } from '../../utils/LocalStorage';
+import { orderDetails } from '../../axios/ServerRequest';
+import ProgressLoader from 'rn-progress-loader';
 
 class OrderScreen extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+          user: null,
+          orders: [],
+          visible:false
+        };
+      }
+    
+      async componentDidMount() {
+        this._unsubscribe = this.props.navigation.addListener('focus', () => {
+          console.log('refresh');
+        });
+        const user = await getUserDetails();
+       
+        this.setState({visible: true});
+       orderDetails(user.token)
+      .then(response => {
+        let data = response.data;
+        if (data.status === 200) {
+          this.setState({orders: data.orders});
+        } else {
+          Toast.show(data.message, Toast.LONG);
+        }
+        this.setState({visible: false});
+      })
+      .catch(error => {
+        console.log(error);
+        this.setState({visible: false});
+      });
+    }
+    
+      componentWillUnmount() {
+        this._unsubscribe();
+      }
 
     renderItem=({item})=>{
         return(
             <Card style={{padding:20}}>
                 <TouchableOpacity onPress={()=>this.props.navigation.navigate("OrderStatus")}>
                     <Column>
-                        <Text style={styles.title}>#356895241</Text>
+                        <Text style={styles.title}>{item.id}</Text>
                         <Row style={{justifyContent:'space-between', marginTop:10}}>
                             <Text style={styles.subTitle}>No. of Items</Text>
-                            <Text style={styles.title}>2</Text>
+                            <Text style={styles.title}>{item.orderList.length}</Text>
                         </Row>
                         <Row style={{justifyContent:'space-between', marginTop:10}}>
                             <Text style={styles.subTitle}>Total Price</Text>
-                            <Text style={styles.title}>₹ 30</Text>
+                            <Text style={styles.title}>₹ {item.total}</Text>
                         </Row>
                         <Row style={{justifyContent:'space-between', marginTop:10}}>
                             <Text style={styles.subTitle}>Status</Text>
-                            <Text style={[styles.title,{color:Color.colorPrimary}]}>Prepared</Text>
+                            <Text style={[styles.title,{color:Color.colorPrimary}]}>{item.status}</Text>
                         </Row>
 
                     </Column>
@@ -43,14 +81,23 @@ class OrderScreen extends Component {
                     barStyle="light-content"
                 />
                 <ToolBar icon={"chevron-left"} title={"Orders"}
-                         onPress={() => this.props.navigation.goBack()}/>
+                         onPress={() => this.props.navigation.replace("HomeScreen")}/>
 
                 <FlatList
-                    data={cartData}
+                    data={this.state.orders}
                     renderItem={this.renderItem}
                     keyExtractor={item => item.id}
-                />
+                    contentContainerStyle={{paddingBottom:100}} 
 
+
+                />
+<ProgressLoader
+          visible={this.state.visible}
+          isModal={true}
+          isHUD={true}
+          hudColor={'#000000'}
+          color={'#FFFFFF'}
+        />
 
             </Column>
         );

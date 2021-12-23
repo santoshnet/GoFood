@@ -100,6 +100,8 @@ class CartScreen extends Component {
               keyExtractor={item => item.id}
               extraData={this.state}
             />
+            {this.state.cartData && this.state.cartData.length>0 ?<Column>
+            
             <Card style={{padding: 20}}>
               <Row style={{justifyContent: 'space-between', margin: 5}}>
                 <Text style={styles.optionText}>Item Total</Text>
@@ -127,6 +129,7 @@ class CartScreen extends Component {
               style={{margin: 20}}
               onPress={() => this.props.navigation.navigate('Orders')}
             />
+            </Column>:null}
           </Column>
         </ScrollView>
         <ProgressLoader

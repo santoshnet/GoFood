@@ -17,7 +17,7 @@ import Button from '../../components/Button';
 import RelativeLayout from '../../components/RelativeLayout';
 import AbsoluteLayout from '../../components/AbsoluteLayout';
 import {cartData} from '../../data/restaurantData';
-import { getCartDetails, updateUserData } from './../../axios/ServerRequest';
+import { getCartDetails, placeOrder, updateUserData } from './../../axios/ServerRequest';
 import ProgressLoader from 'rn-progress-loader';
 import {getUserDetails,setUserDetails} from '../../utils/LocalStorage';
 import TextViewMedium from '../../components/CustomText/TextViewMedium';
@@ -138,6 +138,37 @@ class Checkout extends Component {
       );
   }
 
+
+
+
+  checkoutOrder=()=>{
+    const {cartData} = this.state;
+    let orderItems =  cartData.map(item=>{
+      let orderItem={
+        product_id: item.id,
+        quantity:item.quantity
+      };
+      return orderItem;
+    });
+    this.setState({loading:true})
+
+     placeOrder(this.state.user.token,orderItems)
+      .then(response => {
+        let data = response.data;
+        if (data.status === 200) {
+          Toast.show(data.message, Toast.LONG);
+          this.props.navigation.navigate("OrderSuccess");
+        } else {
+          Toast.show(data.message, Toast.LONG);
+        }
+        this.setState({visible: false, loading:false});
+      })
+      .catch(error => {
+        console.log(error);
+        this.setState({visible: false, loading:false});
+      });
+  }
+
   render() {
     const {user} = this.state;
     return (
@@ -157,7 +188,7 @@ class Checkout extends Component {
               <Card style={{padding: 20}}>
                 <Row style={{justifyContent: 'space-between'}}>
                   <Text style={styles.title}>Address</Text>
-                  {user && user.address ? ( <TouchableOpacity onPress={changeAddress}>
+                  {user && user.address ? ( <TouchableOpacity onPress={this.changeAddress}>
                     <Text
                       style={[styles.optionText, {color: Color.colorPrimary}]}>
                       change
@@ -175,9 +206,9 @@ class Checkout extends Component {
                     <Column style={{marginLeft: 10}}>
                       <TextViewMedium>{user.name}</TextViewMedium>
                       <TextViewRegular>
-                        {user.mobile},{user.email}
+                        {user.mobile}, {user.email}
                       </TextViewRegular>
-                      <TextViewRegular></TextViewRegular>
+                      <TextViewRegular> {user.address}, {user.city}, {user.state}-{user.zip}</TextViewRegular>
                       <Text style={styles.optionText}></Text>
                     </Column>
                   ) : (
@@ -281,7 +312,8 @@ class Checkout extends Component {
             <Button
               title={'Confirm Order'}
               style={{borderRadius: 0}}
-              onPress={() => this.props.navigation.replace('OrderSuccess')}
+              onPress={this.checkoutOrder}
+              loading={this.state.loading}
             />:null}
           </AbsoluteLayout>
         </RelativeLayout>
