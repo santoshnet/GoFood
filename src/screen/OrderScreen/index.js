@@ -5,7 +5,7 @@ import ToolBar from "../../components/ToolBar";
 import Column from "../../components/Column";
 import Card from "../../components/Card";
 import {TouchableOpacity} from "react-native-gesture-handler";
-import {Text, StyleSheet, FlatList,} from "react-native";
+import {Text, StyleSheet, FlatList,RefreshControl} from "react-native";
 import Row from "../../components/Rows";
 import { getUserDetails } from '../../utils/LocalStorage';
 import { orderDetails } from '../../axios/ServerRequest';
@@ -18,18 +18,27 @@ class OrderScreen extends Component {
         this.state = {
           user: null,
           orders: [],
-          visible:false
+          visible:false,
+          isFetching: false,
         };
       }
+
+      onRefresh() {
+        this.setState({isFetching: true,},() => {this.fetchOrderData();});
+    }
     
       async componentDidMount() {
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
           console.log('refresh');
         });
         const user = await getUserDetails();
-       
-        this.setState({visible: true});
-       orderDetails(user.token)
+        this.setState({visible: true, user:user});
+        this.fetchOrderData();
+    }
+
+    fetchOrderData=()=>{
+      const {user} = this.state;
+      orderDetails(user.token)
       .then(response => {
         let data = response.data;
         if (data.status === 200) {
@@ -37,11 +46,11 @@ class OrderScreen extends Component {
         } else {
           Toast.show(data.message, Toast.LONG);
         }
-        this.setState({visible: false});
+        this.setState({visible: false, isFetching:false});
       })
       .catch(error => {
         console.log(error);
-        this.setState({visible: false});
+        this.setState({visible: false, isFetching:false});
       });
     }
     
@@ -52,9 +61,9 @@ class OrderScreen extends Component {
     renderItem=({item})=>{
         return(
             <Card style={{padding:20}}>
-                <TouchableOpacity onPress={()=>this.props.navigation.navigate("OrderStatus")}>
+                <TouchableOpacity onPress={()=>this.props.navigation.navigate("OrderStatus",{order:item})}>
                     <Column>
-                        <Text style={styles.title}>{item.id}</Text>
+                        <Text style={styles.title}>Order No.  #{item.id}</Text>
                         <Row style={{justifyContent:'space-between', marginTop:10}}>
                             <Text style={styles.subTitle}>No. of Items</Text>
                             <Text style={styles.title}>{item.orderList.length}</Text>
@@ -88,10 +97,11 @@ class OrderScreen extends Component {
                     renderItem={this.renderItem}
                     keyExtractor={item => item.id}
                     contentContainerStyle={{paddingBottom:100}} 
-
+                    onRefresh={() => this.onRefresh()}
+                    refreshing={this.state.isFetching}
 
                 />
-<ProgressLoader
+        <ProgressLoader
           visible={this.state.visible}
           isModal={true}
           isHUD={true}

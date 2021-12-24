@@ -58,15 +58,17 @@ export default class CustomSidebarMenu extends Component {
     }
 
     logoutUser = () => {
-        logout();
-        // this.props.navigation.replace('Login');
+         logout();
+        this.props.navigation.replace('Main', { screen: 'LoginScreen' });
 
-        this.props.navigation.dispatch(
-            CommonActions.reset({
-                index: 1,
-                routes: [{name: 'Login'}],
-            }),
-        );
+         //this.props.navigation.replace("main",{screen:'LoginScreen'});
+       
+        // this.props.navigation.dispatch(
+        //     CommonActions.reset({
+        //         index: 0,
+        //         routes: [{ name: 'main' },{name: 'LoginScreen'}],
+        //     }),
+        // );
     };
 
     getActiveRouteState = (name) => {
@@ -144,6 +146,9 @@ export default class CustomSidebarMenu extends Component {
                                 </Text>
                             </TouchableOpacity>
                         ))}
+                        <TouchableOpacity  onPress={this.logoutUser}>
+
+                               
                         <View
                             style={{
                                 flexDirection: 'row',
@@ -159,12 +164,11 @@ export default class CustomSidebarMenu extends Component {
                                     fontSize: 15,
                                     color: 'black',
                                 }}
-                                onPress={() => {
-                                    this.logoutUser();
-                                }}>
+                               >
                                 Logout
                             </Text>
-                        </View>
+                        </View> 
+                        </TouchableOpacity>
                     </View>
                 </ScrollView>
             </View>

@@ -24,13 +24,20 @@ import AbsoluteLayout from "../../components/AbsoluteLayout";
 import Modal from 'react-native-modal';
 import UserInput from "../../components/UserInput";
 import Button from "../../components/Button";
+import { getUserDetails } from '../../utils/LocalStorage';
 
 class ProfileScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isVisible: false
+            isVisible: false,
+            user:null
         }
+    }
+
+    async componentDidMount(){
+      const user = await getUserDetails();
+      this.setState({user:user});
     }
 
     openModal = () => {
@@ -42,6 +49,7 @@ class ProfileScreen extends Component {
 
 
     render() {
+        const {user} = this.state
         return (
             <Column>
                 <AppStatusBar
@@ -54,8 +62,8 @@ class ProfileScreen extends Component {
                     <Row style={{padding: 20, alignItems: 'center'}}>
                         <Image source={UserImage} style={{borderRadius: 50, height: 50, width: 50}}/>
                         <Column style={{marginLeft: 10}}>
-                            <Text style={styles.title}>Santosh Dash</Text>
-                            <Text style={styles.email}>santosh@gmail.com</Text>
+                            <Text style={styles.title}>{user?user.name:null}</Text>
+                            <Text style={styles.email}>{user?user.email:null}</Text>
                         </Column>
                     </Row>
                 </RelativeLayout>
