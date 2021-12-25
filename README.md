@@ -45,19 +45,13 @@ All the code used, are well organized and layered to make the development precis
 
 
 
-## Screen 
+## Android Screen 
 
 <img src="screen/screen1.png">
 
-<img src="screen/screen2.png">
 
-<img src="screen/screen3.png">
 
-<img src="screen/screen4.png">
-
-<img src="screen/screen5.png">
-
-<img src="screen/screen6.png">
+## Dashboard Screen
 
 <img src="screen/1.png">
 
@@ -66,3 +60,9 @@ All the code used, are well organized and layered to make the development precis
 <img src="screen/3.png">
 
 <img src="screen/4.png">
+
+<img src="screen/5.png">
+
+<img src="screen/6.png">
+
+<img src="screen/7.png">
