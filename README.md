@@ -1,4 +1,4 @@
-<a href="https://github.com/santoshnet/GoFood"><img src="screen/logo.png" height="150px" width="150px" title="Grocery" alt="Grocery Store"></a>
+<a href="https://github.com/santoshnet/GoFood"><img src="screen/logo.png" height="60px" width="150px" title="Grocery" alt="Grocery Store"></a>
 # GoFood
 GoFood App, is an online shopping cart application. This is a geniune and native mobile application to which you can rely on, specially when you want to get it done quickly. 
 It comprises of 10+ screens with different features to make the navigate smooth & user-friendly.
