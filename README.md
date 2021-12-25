@@ -31,7 +31,6 @@ All the code used, are well organized and layered to make the development precis
 - Token Based Authentication.
 - Only COD and offline payment support.
 
-**_For Api integration Please Contact us:- contact@quintuslabs.com_**
 
 
 
