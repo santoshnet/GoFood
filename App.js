@@ -101,7 +101,7 @@ class App extends Component {
     );
     componentDidMount = async () => {
         requestUserPermission();
-        notificationListener();
+        notificationListener(this.props.navigation);
     };
 
    
